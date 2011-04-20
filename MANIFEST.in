@@ -1,0 +1,2 @@
+recursive-include sys2do/static *
+recursive-include sys2do/templates *
