@@ -1,8 +1,15 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime as dt
-import json
+import json, traceback
 from flask import g, render_template, flash, session, redirect, url_for, request, jsonify
 from flask import current_app as app
+
+
+
+from sys2do.model import connection
+from sys2do.model.auth import User
+from sys2do.model.logic import Clinic
+
 
 
 def index():
@@ -11,32 +18,7 @@ def index():
 
 
 def clinic_location_data():
-    data = [
-            {
-             "id"  : 1,
-             "lat" : 22.396428,
-             "lng" : 114.1094970,
-             "title" : 'C1'
-            },
-            {
-             "id" : 2,
-             "lat": 22.396428,
-             "lng": 114.0094970,
-             "title": 'C2'
-             },
-             {
-              "id" : 3,
-              "lat": 22.296428,
-              "lng": 114.0094970,
-              "title": 'C3'
-             },
-             {
-              "id" : 4,
-              "lat": 22.286428,
-              "lng": 114.1094970,
-              "title": 'C4'
-              }
-            ]
+    data = [{"lat":c.location[0], "lng":c.location[1], "title":c.name} for c in connection.Clinic.find()]
     return render_template("js/clinic_location_data.js", data = data)
 
 
@@ -70,30 +52,100 @@ def calendars():
                     })
 
 
+def _filter_booking(start = None, end = None):
+    try:
+        fields = {'title':True, 'start':True, 'end':True}
+        conditions = {'active':0}
+        if start : conditions["start"] = {'$gt':start}
+        if end : conditions["end"] = {'$lt':end}
+        data = [{'title':b.title, 'start':b.start, 'end':b.end} for b in connection.Booking.find(conditions)]
+        return {
+                "success" :True,
+                "message" : "Load data",
+                "total":len(data),
+                "data" : data
+                }
+    except:
+        app.logger.error(traceback.format_exc())
+        return {
+                "success" :False,
+                "message" : "Error when reading the objects!",
+                }
 
 
 
-def _create_event(start, end, title):
+def _create_booking(start, end, title):
     import random
-    tmp = {
-          "start" : start,
-          "end":end,
-          "title":title,
-          "id": random.randint(1, 1000)
-          }
-    events.append(tmp)
+    try:
+        b = connection.Booking()
+        b.start = start
+        b.end = end
+        b.title = title
+        b.id = random.randint(0, 1000)
+        b.save()
+        return {
+                "success" : True,
+                "message" : "Created",
+                "data" : {
+                          'title' : b.title,
+                          'start' : b.start,
+                          'end'   : b.end,
+                          'id'    : b.id
+                          }
+                }
+    except:
+        app.logger.error(traceback.format_exc())
+        return {
+                "success" : False,
+                "message" : "Error when adding the object",
+                }
 
-    return {
-            "success" : True,
-            "message" : "Created",
-            "data" : tmp
-            }
+
+def _update_booking(id, start, end, title):
+    try:
+        b = connection.Booking.one({'id':id, 'active':0})
+        b.start = start
+        b.end = end
+        b.title = title
+        b.save()
+        return  {
+                "success" : True,
+                "message" : "Update the object successfully!",
+                "data" : b
+                }
+    except:
+        app.logger.error(traceback.format_exc())
+        return {
+                "success" : False,
+                "message" : "Error when updating the object",
+                }
+
+
+def _remove_booking(id):
+    try:
+        b = connection.Booking.one({'id':id, 'active':0})
+        b.active = 1
+        b.save()
+        return {
+                "success" : True,
+                "message" : "Deleting the object successfully!",
+                }
+    except:
+        app.logger.error(traceback.format_exc())
+        return {
+                "success" : False,
+                "message" : "Error when deleting the object",
+                }
 
 
 def calendars_event():
     action = request.values.get("action", None)
+
     if action == "r":
-        return event_read()
+        app.logger.debug("^^^^^^^^^ r")
+        return jsonify(_filter_booking())
+
+
     if action.startswith("u"):
         app.logger.debug("^^^^^^^^^ u")
         data = request.values.get("data", "")
@@ -101,27 +153,21 @@ def calendars_event():
             return jsonify({"success" : False, "message":"No data receive!"})
 
         data = json.loads(data)
-        items = filter(lambda item:item["id"] == data["id"], events)
-        if not items:
-            return jsonify({"success" : False, "message":"No such record!"})
-        record = items[0]
-        record["title"] = data["title"]
-        record["start"] = data["start"]
-        record["end"] = data["end"]
-        return jsonify({
-               "success" : True,
-               "message" : "Update successfully",
-               "data" : record
-               })
+
+        return jsonify(_update_booking(data["id"], data.get("title", None), data.get("start", None), data.get("end", None)))
+
 
     if action == "n":
+        app.logger.debug("^^^^^^^^^ u")
         data = request.values.get("data", "")
         if not data :
             return jsonify({"success" : False, "message":"No data receive!"})
         data = json.loads(data)
-        aa = jsonify(_create_event(data["start"], data["end"], data["title"]))
-        app.logger.debug(aa)
+        aa = jsonify(_create_booking(data["start"], data["end"], data["title"]))
         return aa
+
+
+
     if action.startswith("d"):
         app.logger.debug("^^^^^^^^^ d")
         app.logger.debug(request.method)
@@ -130,8 +176,15 @@ def calendars_event():
             return jsonify({"success" : False, "message":"No data receive!"})
 
         data = json.loads(data)
-        events = filter(lambda item:item["id"] != data, events)
-        return jsonify({
-               "success" : True,
-               "message" : "Delete successfully",
-               })
+        app.logger.debug(data)
+
+        return jsonify(_remove_booking(data))
+
+
+def test():
+
+    u = connection.User()
+    u.email = request.values.get("email", "")
+    u.password = request.values.get("password", "")
+    u.save()
+    return u.to_json()
