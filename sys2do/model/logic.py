@@ -15,11 +15,15 @@ class Clinic(Abstract):
     structure = {
         'name': unicode,
         'location' : (float, float),
+        'address':unicode,
+        'district':unicode,
+        'street':unicode,
         'website' : unicode,
         'image_url' : unicode,
         'desc':unicode,
         'doctors':[int],
         'nurse':[int],
+        'category':[int],
     }
 
     required_fields = ['name']

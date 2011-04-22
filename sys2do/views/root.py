@@ -1,20 +1,84 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime as dt
 import json, traceback
+from webhelpers.paginate import Page
+
 from flask import g, render_template, flash, session, redirect, url_for, request, jsonify
 from flask import current_app as app
 
-
-
 from sys2do.model import connection
-from sys2do.model.auth import User
-from sys2do.model.logic import Clinic
 
 
 
 def index():
     app.logger.debug('A value for debugging')
     return render_template("index.html")
+
+
+def get_clinic_data():
+    try:
+        conditions = {'active' : 0}
+        start = int(request.values.get('start', '0'))
+        limit = int(request.values.get("limit", "3"))
+        total_data = connection.Clinic.find(conditions)
+        data = connection.Clinic.find(conditions)[start:start + limit]
+
+        return jsonify({
+                'success' : True,
+                'message' : 'Geting the clinic data successfully!',
+                'data'    : [{'id':c.id, 'name':c.name, 'image':c.image_url, 'address':c.address, 'location':c.address, 'desc':c.desc}
+                             for c in data],
+                'total'   : total_data.count()
+                })
+    except:
+        app.logger.error(traceback.format_exc())
+        return jsonify({
+                'success' : False,
+                'message' : 'Error when geting the clinic data!'
+                })
+
+
+def get_user_data():
+    try:
+        conditions = {'active' : 0}
+        start = int(request.values.get('start', '0'))
+        limit = int(request.values.get("limit", "3"))
+        total_data = connection.User.find(conditions)
+        data = connection.User.find(conditions)[start:start + limit]
+
+        return jsonify({
+                'success' : True,
+                'message' : 'Geting the user data successfully!',
+                'data'    : [{'id':c.id, 'email':c.email, 'phone':c.phone, 'image':c.image_url, 'first_name':c.first_name, 'last_name':c.last_name}
+                             for c in data],
+                'total'   : total_data.count()
+                })
+    except:
+        app.logger.error(traceback.format_exc())
+        return jsonify({
+                'success' : False,
+                'message' : 'Error when geting the user data!'
+                })
+
+
+def delete_object():
+    dbobj = request.values.get("type", "")
+    id = request.values.get("id", "")
+    app.logger.debug(id)
+    if not dbobj or not id:
+        return jsonify({
+                        'success' : False,
+                        'message' : 'Required params not exist!'
+                        })
+    obj = getattr(connection, dbobj).one({'id':int(id), 'active':0})
+    app.logger.debug("~~~~~")
+    app.logger.debug(obj.id)
+    obj.active = 1
+    obj.save()
+    return jsonify({
+                    'sucess' : True,
+                    'message' : 'Delete the object successfully!'
+                    })
 
 
 def clinic_location_data():

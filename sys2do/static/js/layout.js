@@ -18,6 +18,7 @@ var msg_store = new Ext.data.Store({
                                   
 var main_tabs = new Ext.TabPanel({
     region:'center',
+    xtype:'tabpanel',
     activeTab:0,
     margins:'0 0 0 0',
     items:[{
@@ -58,6 +59,29 @@ function addCalendarTab(){
         main_tabs.setActiveTab(calendar_tab);
     }else{
         main_tabs.add(cal_config).show();
+    }
+}
+
+
+function addClinicManagementTab(){
+    var clinic_management_tab = main_tabs.findById("tab_clinic_management");
+    if(clinic_management_tab){
+        main_tabs.setActiveTab(clinic_management_tab);
+    }else{
+        var t = main_tabs.add(clinic_management_config)
+        t.getBottomToolbar().store.load();
+        t.show();
+    }
+}
+
+function addUserManagementTab(){
+    var user_management_tab = main_tabs.findById("tab_user_management");
+    if(user_management_tab){
+        main_tabs.setActiveTab(user_management_tab);
+    }else{
+        var t = main_tabs.add(user_management_config)
+        t.getBottomToolbar().store.load();
+        t.show();
     }
 }
                                   
@@ -121,7 +145,17 @@ var west_tab_config = {
 				                   leaf:true,
 				                   id:'bn_open_calendar'
 				                   
-				               }]
+				               },{
+                                   text:'Clinic Management',
+                                   leaf:true,
+                                   id:'bn_clinic_management'
+                                   
+                               },{
+                                   text:'User Management',
+                                   leaf:true,
+                                   id:'bn_user_management'
+                                   
+                               }]
 				           }),
 				           rootVisiable:false,
 				           listeners: {
@@ -134,7 +168,11 @@ var west_tab_config = {
 				                        addGMapTab();
 				                    }else if(node.id=='bn_open_calendar'){
 				                        addCalendarTab();
-				                    }
+				                    }else if(node.id=='bn_clinic_management'){
+                                        addClinicManagementTab();
+                                    }else if(node.id=='bn_user_management'){
+                                        addUserManagementTab();
+                                    }
 				                        
 				                }
 				            }

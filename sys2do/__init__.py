@@ -23,6 +23,12 @@ import views.root as r
 app.add_url_rule("/test", view_func = r.test)
 
 app.add_url_rule("/", view_func = r.index)
+app.add_url_rule("/get_clinic_data", view_func = r.get_clinic_data, methods = ['GET', 'POST'])
+app.add_url_rule("/get_user_data", view_func = r.get_user_data, methods = ['GET', 'POST'])
+
+
+app.add_url_rule("/delete_object", view_func = r.delete_object, methods = ['GET', 'POST'])
+
 app.add_url_rule("/clinic_location_data.js", view_func = r.clinic_location_data)
 app.add_url_rule("/event_read", view_func = r.event_read)
 app.add_url_rule("/calendars.json", view_func = r.calendars, methods = ['GET', 'POST'])
