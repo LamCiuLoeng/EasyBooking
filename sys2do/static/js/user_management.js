@@ -45,11 +45,11 @@ var user_management_config = {
         emptyMsg: "No user to display"
     }),
     tbar:new Ext.Toolbar({
-        items:[{
+        items:['->',{
             text:'Add User',
             cls:'x-btn-text-icon',
             handler:function(){
-                //Ext.Msg.alert("kkk")
+                
             }
         },{
             text:'Delete User',

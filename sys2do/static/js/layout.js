@@ -19,6 +19,7 @@ var msg_store = new Ext.data.Store({
 var main_tabs = new Ext.TabPanel({
     region:'center',
     xtype:'tabpanel',
+    id:'main_tabs',
     activeTab:0,
     margins:'0 0 0 0',
     items:[{
@@ -68,7 +69,18 @@ function addClinicManagementTab(){
     if(clinic_management_tab){
         main_tabs.setActiveTab(clinic_management_tab);
     }else{
-        var t = main_tabs.add(clinic_management_config)
+        var t = main_tabs.add(clinic_management_config);
+        t.getBottomToolbar().store.load();
+        t.show();
+    }
+}
+
+function addDoctorManagementTab(){
+    var doctor_management_tab = main_tabs.findById("tab_doctor_management");
+    if(doctor_management_tab){
+        main_tabs.setActiveTab(doctor_management_tab);
+    }else{
+        var t = main_tabs.add(doctor_management_config)
         t.getBottomToolbar().store.load();
         t.show();
     }
@@ -151,6 +163,11 @@ var west_tab_config = {
                                    id:'bn_clinic_management'
                                    
                                },{
+                                   text:'Doctor Management',
+                                   leaf:true,
+                                   id:'bn_doctor_management'
+                                   
+                               },{
                                    text:'User Management',
                                    leaf:true,
                                    id:'bn_user_management'
@@ -170,6 +187,8 @@ var west_tab_config = {
 				                        addCalendarTab();
 				                    }else if(node.id=='bn_clinic_management'){
                                         addClinicManagementTab();
+                                    }else if(node.id=='bn_doctor_management'){
+                                        addDoctorManagementTab();
                                     }else if(node.id=='bn_user_management'){
                                         addUserManagementTab();
                                     }

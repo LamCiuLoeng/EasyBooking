@@ -19,7 +19,7 @@ def get_clinic_data():
     try:
         conditions = {'active' : 0}
         start = int(request.values.get('start', '0'))
-        limit = int(request.values.get("limit", "3"))
+        limit = int(request.values.get("limit", "10"))
         total_data = connection.Clinic.find(conditions)
         data = connection.Clinic.find(conditions)[start:start + limit]
 
@@ -36,6 +36,83 @@ def get_clinic_data():
                 'success' : False,
                 'message' : 'Error when geting the clinic data!'
                 })
+
+
+def get_doctor_data():
+    try:
+        conditions = {'active' : 0}
+        start = int(request.values.get('start', '0'))
+        limit = int(request.values.get("limit", "10"))
+        total_data = connection.DoctorProfile.find(conditions)
+        result = connection.DoctorProfile.find(conditions)[start:start + limit]
+
+        data = []
+        for d in result:
+            tmp = {
+                   "id" : d.id,
+                   "uid" : d.uid,
+                   "desc" : d.desc
+                   }
+            u = connection.User.one({'active':0, 'id':d.uid})
+            tmp['name'] = u.name
+            tmp['clinic'] = " ".join([connection.Clinic.one({'id':cid}).name for cid in d.clinic])
+            tmp['category'] = " ".join([connection.Category.one({'id':cid}).name for cid in d.category])
+
+        return jsonify({
+                'success' : True,
+                'message' : 'Geting the doctor data successfully!',
+                'data'    : data,
+                'total'   : total_data.count()
+                })
+    except:
+        app.logger.error(traceback.format_exc())
+        return jsonify({
+                'success' : False,
+                'message' : 'Error when geting the clinic data!'
+                })
+
+
+def new_clinic():
+    name = request.values.get('name', None)
+
+    if not name :
+        return jsonify({
+                'success' : False,
+                'message' : 'No clinic name is supplied!'
+                })
+
+    c = connection.Clinic()
+    c.id = c.getID()
+    c.name = name
+    c.address = request.values.get('address', None)
+    c.desc = request.values.get('desc', None)
+    c.save()
+    return jsonify({
+                    'success' : True,
+                    'message' : 'Save the new clinic successfully!'
+                    })
+
+
+def update_clinic():
+    id = request.values.get('id', None)
+    name = request.values.get('name', None)
+
+    if not id or not name:
+        return jsonify({
+                'success' : False,
+                'message' : 'No id supplied or the clinic name is blank !'
+                })
+
+    c = connection.Clinic.one({'id':int(id), 'active':0})
+    c.name = name
+    c.address = request.values.get('address', None)
+    c.desc = request.values.get('desc', None)
+    c.save()
+
+    return jsonify({
+                    'success' : True,
+                    'message' : 'Update the clinic info successfully!'
+                    })
 
 
 def get_user_data():
@@ -77,7 +154,7 @@ def delete_object():
     obj.save()
     return jsonify({
                     'sucess' : True,
-                    'message' : 'Delete the object successfully!'
+                    'message' : 'Delete the record successfully!'
                     })
 
 
