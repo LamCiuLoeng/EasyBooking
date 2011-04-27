@@ -35,7 +35,7 @@ var doctor_management_config = {
     bbar:new Ext.PagingToolbar({
         pageSize : 10,
         store:doctor_store,
-        displayMsg: 'Displaying clinic info {0} - {1} of {2}',
+        displayMsg: 'Displaying doctor info {0} - {1} of {2}',
         displayInfo: true,
         emptyMsg: "No doctor to display"
     }),
@@ -52,6 +52,7 @@ var doctor_management_config = {
                         title : 'New doctor',
                         id:'tab_new_doctor',
                         xtype:'form',
+                        closable:true,
                         items:[{
                             xtype : 'textfield',
                             fieldLabel:'Name',

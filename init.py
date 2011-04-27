@@ -67,26 +67,53 @@ def init():
     admin.id = admin.getID()
     admin.save()
 
+    temp1 = connection.User()
+    temp1.email = u'temp1@aa.com'
+    temp1.password = u'aa'
+    temp1.id = temp1.getID()
+    temp1.first_name = u"Temp1"
+    temp1.last_name = u"KK"
+    temp1.save()
+
+    temp2 = connection.User()
+    temp2.email = u'temp2@aa.com'
+    temp2.password = u'aa'
+    temp2.id = temp2.getID()
+    temp2.first_name = u"Temp2"
+    temp2.last_name = u"KK"
+    temp2.save()
+
     radmin = connection.Role()
-    radmin.name = u'Administrator'
+    radmin.name = u'ADMINISTRATOR'
+    radmin.display = u'Administrator'
     radmin.users = [admin.id]
     radmin.id = radmin.getID()
     radmin.save()
 
     rdoctor = connection.Role()
-    rdoctor.name = u'Doctor'
+    rdoctor.name = u'DOCTOR'
+    rdoctor.displayname = u'Doctor'
     rdoctor.id = rdoctor.getID()
     rdoctor.save()
 
     rnurse = connection.Role()
-    rnurse.name = u'Nurse'
+    rnurse.name = u'NURSE'
+    rnurse.displayname = u'Nurse'
     rnurse.id = rnurse.getID()
     rnurse.save()
 
     ruser = connection.Role()
-    ruser.name = u'Normal User'
+    ruser.name = u'NORMALUSER'
+    ruser.displayname = u'Normal User'
     ruser.id = ruser.getID()
     ruser.save()
+
+    rtemp = connection.Role()
+    rtemp.name = u'TEMPUSER'
+    rtemp.displayname = u'Temp User'
+    rtemp.id = rtemp.getID()
+    rtemp.users = [temp1.id, temp2.id]
+    rtemp.save()
 
 
     c1 = connection.Clinic()

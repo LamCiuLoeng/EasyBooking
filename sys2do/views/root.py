@@ -68,8 +68,41 @@ def get_doctor_data():
         app.logger.error(traceback.format_exc())
         return jsonify({
                 'success' : False,
-                'message' : 'Error when geting the clinic data!'
+                'message' : 'Error when geting the doctor data!'
                 })
+
+def get_nurse_data():
+    try:
+        conditions = {'active' : 0}
+        start = int(request.values.get('start', '0'))
+        limit = int(request.values.get("limit", "10"))
+        total_data = connection.NurseProfile.find(conditions)
+        result = connection.NurseProfile.find(conditions)[start:start + limit]
+
+        data = []
+        for d in result:
+            tmp = {
+                   "id" : d.id,
+                   "uid" : d.uid,
+                   "desc" : d.desc
+                   }
+            u = connection.User.one({'active':0, 'id':d.uid})
+            tmp['name'] = u.name
+            tmp['clinic'] = " ".join([connection.Clinic.one({'id':cid}).name for cid in d.clinic])
+
+        return jsonify({
+                'success' : True,
+                'message' : 'Geting the nurse data successfully!',
+                'data'    : data,
+                'total'   : total_data.count()
+                })
+    except:
+        app.logger.error(traceback.format_exc())
+        return jsonify({
+                'success' : False,
+                'message' : 'Error when geting the nurse data!'
+                })
+
 
 
 def new_clinic():
@@ -320,6 +353,27 @@ def calendars_event():
         app.logger.debug(data)
 
         return jsonify(_remove_booking(data))
+
+
+def get_temp_user():
+    try:
+        r = connection.Role.one({'name':'TEMPUSER'})
+        data = []
+        for id in r.users:
+            u = connection.User.one({'id':id})
+            data.append({'id':u.id, 'email':u.email, 'first_name':u.first_name, 'last_name':u.last_name})
+        return jsonify({
+                        'success':True,
+                        'data':data,
+                        'total':len(data),
+                        'message':'Get the temp users successfully!'
+                        })
+    except:
+        app.logger.error(traceback.format_exc())
+        return jsonify({
+                        'success' : False,
+                        'message' : 'Error when getting the temp users!'
+                        })
 
 
 def test():

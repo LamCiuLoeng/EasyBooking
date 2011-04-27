@@ -49,6 +49,7 @@ class Role(Abstract):
     __collection__ = 'ROLE'
     structure = {
         'name': unicode,
+        'displayname' : unicode,
         'desc':unicode,
         'users':[int],
         'permissions':[int],

@@ -86,6 +86,18 @@ function addDoctorManagementTab(){
     }
 }
 
+
+function addNurseManagementTab(){
+    var nurse_management_tab = main_tabs.findById("tab_nurse_management");
+    if(nurse_management_tab){
+        main_tabs.setActiveTab(nurse_management_tab);
+    }else{
+        var t = main_tabs.add(nurse_management_config)
+        t.getBottomToolbar().store.load();
+        t.show();
+    }
+}
+
 function addUserManagementTab(){
     var user_management_tab = main_tabs.findById("tab_user_management");
     if(user_management_tab){
@@ -168,6 +180,11 @@ var west_tab_config = {
                                    id:'bn_doctor_management'
                                    
                                },{
+                                   text:'Nurse Management',
+                                   leaf:true,
+                                   id:'bn_nurse_management'
+                                   
+                               },{
                                    text:'User Management',
                                    leaf:true,
                                    id:'bn_user_management'
@@ -189,6 +206,8 @@ var west_tab_config = {
                                         addClinicManagementTab();
                                     }else if(node.id=='bn_doctor_management'){
                                         addDoctorManagementTab();
+                                    }else if(node.id=='bn_nurse_management'){
+                                        addNurseManagementTab();
                                     }else if(node.id=='bn_user_management'){
                                         addUserManagementTab();
                                     }
