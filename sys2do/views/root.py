@@ -38,6 +38,24 @@ def get_clinic_data():
                 })
 
 
+def get_all_clinic():
+    try:
+        conditions = {'active' : 0}
+        data = connection.Clinic.find(conditions)
+        return jsonify({
+                'success' : True,
+                'message' : 'Geting the clinic data successfully!',
+                'data'    : [{'id':c.id, 'name':c.name} for c in data],
+                'total'   : data.count()
+                })
+    except:
+        app.logger.error(traceback.format_exc())
+        return jsonify({
+                'success' : False,
+                'message' : 'Error when geting the clinic data!'
+                })
+
+
 def get_doctor_data():
     try:
         conditions = {'active' : 0}
@@ -86,10 +104,11 @@ def get_nurse_data():
                    "uid" : d.uid,
                    "desc" : d.desc
                    }
+            app.logger.debug(d.uid)
             u = connection.User.one({'active':0, 'id':d.uid})
-            tmp['name'] = u.name
+            tmp['name'] = ".".join([u.first_name, u.last_name])
             tmp['clinic'] = " ".join([connection.Clinic.one({'id':cid}).name for cid in d.clinic])
-
+            data.append(tmp)
         return jsonify({
                 'success' : True,
                 'message' : 'Geting the nurse data successfully!',
@@ -124,6 +143,29 @@ def new_clinic():
                     'success' : True,
                     'message' : 'Save the new clinic successfully!'
                     })
+
+
+def new_nurse():
+    uid = request.values.get('user_id', None)
+    cid = request.values.get('clinic_id', None)
+
+    if not uid or not cid:
+        return jsonify({
+                'success' : False,
+                'message' : 'The required value(s) is/are not supplied!'
+                })
+
+    c = connection.NurseProfile()
+    c.id = c.getID()
+    c.uid = int(uid)
+    c.clinic = [int(cid)]
+    c.desc = request.values.get('desc', None)
+    c.save()
+    return jsonify({
+                    'success' : True,
+                    'message' : 'Save the new nurse successfully!'
+                    })
+
 
 
 def update_clinic():

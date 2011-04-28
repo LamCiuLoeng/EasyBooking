@@ -152,6 +152,16 @@ var clinic_management_config = {
                         xtype:'form',
                         closable:true,
                         items:[{
+                            xtype : 'hidden',
+                            name : 'lat',
+                            ref:'form_lat'
+                        },
+                        {
+                            xtype : 'hidden',
+                            name : 'lng',
+                            ref:'form_lng'
+                        },  
+                        {
                             xtype : 'textfield',
 				            fieldLabel:'Name',
 				            name : 'name',
@@ -170,9 +180,21 @@ var clinic_management_config = {
                             name:'desc',
                             fieldLabel:'Description',
 				            //hideLabel:true,
-				            height:100,
-				            anchor:'100%',
+				            height:150,
+                            
+				            //anchor:'100%',
                             ref:'form_desc'
+                        },{
+                            xtype:'gmappanel',
+                            name:'location',
+                            fieldLabel:'Location',
+                            ref:'form_location',
+                            listeners:{
+                                init:function(event){
+//                                    Ext.Msg.alert(event.latLng);
+                                    Ext.Msg.alert("kkk");
+                                }
+                            }
                         }],
                         buttons:[{
 	                            text:"Save",
@@ -184,7 +206,9 @@ var clinic_management_config = {
 	                                        type : 'Clinic',
 	                                        name: f.form_name.getValue(),
                                             address: f.form_address.getValue(),
-                                            desc: f.form_desc.getValue()
+                                            desc: f.form_desc.getValue(),
+                                            lat:f.form_lat.getValue(),
+                                            lng:f.form_lng.getValue()
 	                                    },
 	                                    success:function(result, request){
                                             try{
