@@ -24,6 +24,7 @@ app.add_url_rule("/test", view_func = r.test)
 
 app.add_url_rule("/", view_func = r.index)
 app.add_url_rule("/get_clinic_data", view_func = r.get_clinic_data, methods = ['GET', 'POST'])
+app.add_url_rule("/get_one_clinic", view_func = r.get_one_clinic, methods = ['GET', 'POST'])
 app.add_url_rule("/get_all_clinic", view_func = r.get_all_clinic, methods = ['GET', 'POST'])
 app.add_url_rule("/get_user_data", view_func = r.get_user_data, methods = ['GET', 'POST'])
 app.add_url_rule("/get_doctor_data", view_func = r.get_doctor_data, methods = ['GET', 'POST'])

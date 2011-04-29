@@ -83,6 +83,22 @@ def init():
     temp2.last_name = u"KK"
     temp2.save()
 
+    temp3 = connection.User()
+    temp3.email = u'temp3@aa.com'
+    temp3.password = u'aa'
+    temp3.id = temp3.getID()
+    temp3.first_name = u"Temp3"
+    temp3.last_name = u"KK"
+    temp3.save()
+
+    temp4 = connection.User()
+    temp4.email = u'temp4@aa.com'
+    temp4.password = u'aa'
+    temp4.id = temp4.getID()
+    temp4.first_name = u"Temp4"
+    temp4.last_name = u"KK"
+    temp4.save()
+
     radmin = connection.Role()
     radmin.name = u'ADMINISTRATOR'
     radmin.display = u'Administrator'
@@ -151,6 +167,39 @@ def init():
     c5.location = (22.284428, 114.1094970)
     c5.save()
 
+
+    d1 = connection.DoctorProfile()
+    d1.id = d1.getID()
+    d1.uid = temp1.id
+    d1.desc = u"I'm temp 1 doctor."
+    d1.clinic = [c1.id]
+    d1.save()
+
+    d2 = connection.DoctorProfile()
+    d2.id = d2.getID()
+    d2.uid = temp2.id
+    d2.desc = u"I'm temp 2 doctor."
+    d2.clinic = [c1.id]
+    d2.save()
+
+    d3 = connection.DoctorProfile()
+    d3.id = d3.getID()
+    d3.uid = temp3.id
+    d3.desc = u"I'm temp 3 doctor."
+    d3.clinic = [c1.id]
+    d3.save()
+
+    d4 = connection.DoctorProfile()
+    d4.id = d4.getID()
+    d4.uid = temp4.id
+    d4.desc = u"I'm temp 4 doctor."
+    d4.clinic = [c2.id]
+    d3.save()
+
+    c1.doctors = [d1.id, d2.id, d3.id]
+    c2.doctors = [d4.id]
+    c1.save()
+    c2.save()
 
     print "*" * 20
     print "finish"

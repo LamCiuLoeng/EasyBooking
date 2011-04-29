@@ -95,6 +95,7 @@ function addNurseManagementTab(){
         var t = main_tabs.add(nurse_management_config)
         t.getBottomToolbar().store.load();
         t.show();
+//        t.doLayout();
     }
 }
 
@@ -106,6 +107,7 @@ function addUserManagementTab(){
         var t = main_tabs.add(user_management_config)
         t.getBottomToolbar().store.load();
         t.show();
+//        t.doLayout();
     }
 }
                                   

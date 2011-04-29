@@ -56,6 +56,32 @@ def get_all_clinic():
                 })
 
 
+def get_one_clinic():
+    id = request.values.get("id", None)
+    if not id:
+        return jsonify({
+                        'success' : False,
+                        'message' : 'No id supplied for the clinic!'
+                        })
+    try:
+        c = connection.Clinic.one({'id':int(id), 'active':0})
+        ds = [connection.DoctorProfile.one({'id':did}).populate() for did in c.doctors]
+        return jsonify({
+                        'success' : True,
+                        'message' : 'Get the clinic data successfully!',
+                        'clinic'  : c.populate(),
+                        'doctors' : ds
+                        })
+    except:
+        app.logger.error(traceback.format_exc())
+        return jsonify({
+                'success' : False,
+                'message' : 'Error when geting the clinic data!'
+                })
+
+
+
+
 def get_doctor_data():
     try:
         conditions = {'active' : 0}

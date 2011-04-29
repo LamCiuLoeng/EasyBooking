@@ -147,10 +147,59 @@ Ext.reg('gmappanel', Ext.ux.GMapPanel);
 
 
 
+function openClinicTab(cid){
+    var main_tabs = Ext.getCmp("main_tabs");
+    var tab_id = 'tab_clinic_' + cid;
+    var t = main_tabs.findById(tab_id)
+    if(t){
+        main_tabs.setActiveTab(t);
+    }else{
+        Ext.Ajax.request({
+            url:'/get_one_clinic',
+            params:{
+                id : cid
+            },
+            success:function(result, request){
+                var r = Ext.util.JSON.decode(result.responseText);
+                if(r.success){
+                    var html = "<h2>"+r.clinic.name+"</h2>";
+                    html += "<p>"+r.clinic.desc+"</p>";
+                    
+                    if(r.doctors.length>0){   
+	                    html = "<div><ul>";
+	                    for(var i=0;i< r.doctors.length;i++){
+	                        html += "<li>";
+	                        html += "<div><p><b>" + r.doctors[i].name + "</b><br />";
+	                        html += r.doctors[i].desc + "</p></div>";
+	                        html += "</li>"
+	                    }
+	                    html += "</ul></div>";
+                    }
+			        main_tabs.add({
+			            title : r.clinic.name,
+                        id : 'tab_clinic_' + cid,
+                        xtype:'panel',
+                        html: html,
+                        closable:true
+			        }).show();
+                }else{
+                    Ext.Msg.alert(r.message);
+                }
+            },
+            failure:function(result, request){
+                Ext.Msg.alert("Error");
+            }
+        })
+        
+    }
+}
+
+
+
 
 
 //gmap config for the tab panel
-var gmap_config = {
+var gmap_session_config = {
 	            title: 'Clinic Location Map',
 	            iconCls: 'tabs',
 	            id:'gmap_tab',
@@ -158,3 +207,68 @@ var gmap_config = {
 	            xtype: 'gmappanel',
 	            gpmarkers: gpmarkers  //get it from the database
 	        };
+            
+            
+var gmap_config = {
+    title: 'Clinic Location Map',
+    iconCls: 'tabs',
+    id:'gmap_tab',
+    closable:true,
+    layout:'border',
+    items:[{
+        region:'center',
+        xtype: 'gmappanel',
+        gpmarkers: gpmarkers  //get it from the database
+    },{
+        region:'north',
+        height:27,
+        xtype:'toolbar',
+        items:['->',{
+            xtype:'textfield',
+            name:'q'
+        },{
+            text:'Search',
+            xtype:'button',
+            handler:function(btn){
+                
+            }
+        }]
+    },{
+        region:'west',
+        id:'kk',
+        width:150,
+//        html:'XXX',
+        listeners:{
+            afterRender :function(){
+                Ext.ux.GMapPanel.superclass.afterRender.call(this);
+                var p = this;
+                Ext.Ajax.request({
+                    url:'/get_all_clinic',
+                    success:function(result, request){
+                        try{
+                            var r = Ext.util.JSON.decode(result.responseText);
+                            if(r.success){
+                                var h = "<ul>";
+                                for(var i=0;i<r.data.length;i++){                                    
+                                    h += "<div>";
+                                    h += "<p><b>" + r.data[i].name + "</b><br />";
+                                    h += "<input type='button' value='View Doctors' onclick='openClinicTab("+ r.data[i].id +")'/></p>"
+                                    h += "</div>";
+                                }
+                                h += "</ul>";
+                                p.update(h);
+                            }
+                            
+                        }catch (err){
+                            Ext.Msg.alert("Can't decode the result from the server !");  
+                            throw err;
+                        }
+                    },
+                    failure:function(result, request){
+                        Ext.Msg.alert('Error','Unable to save the record!')
+                    }
+                });
+            }
+        }
+    }]
+}

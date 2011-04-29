@@ -43,6 +43,17 @@ class User(Abstract):
     def __repr__(self):
         return '%s %s' % (self.first_name, self.last_name)
 
+    def populate(self):
+        return {
+                'id' : self.id,
+                'email' : self.email,
+                'first_name' : self.first_name,
+                'last_name' : self.last_name,
+                'image_url' : self.image_url,
+                'phone' : self.phone,
+                'name' : str(self)
+                }
+
 
 @connection.register
 class Role(Abstract):

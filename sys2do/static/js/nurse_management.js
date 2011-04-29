@@ -174,6 +174,7 @@ var nurse_management_config = {
                     new_tab.show();
 //                    new_tab.form_clinic_id.setValue(sel.data.cid);
 //                    new_tab.form_user_id.setValue(sel.data.uid);
+//                    new_tab.doLayout();
 	            }
 	        }
 	    }

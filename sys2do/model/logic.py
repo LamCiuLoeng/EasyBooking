@@ -37,6 +37,13 @@ class Clinic(Abstract):
     def __repr__(self):
         return self.name
 
+    def populate(self):
+        return {
+                'id' : self.id,
+                'name' : self.name,
+                'desc' : self.desc,
+                }
+
 
 
 @connection.register
@@ -60,9 +67,12 @@ class Category(Abstract):
     def __repr__(self):
         return self.name
 
-
-
-
+    def populate(self):
+        return {
+                'id' :self.id,
+                'name' : self.name,
+                'desc' : self.desc,
+                }
 
 
 @connection.register
@@ -85,6 +95,17 @@ class DoctorProfile(Abstract):
     use_autorefs = True
     def __repr__(self):
         return self.name
+
+    def populate(self):
+        u = connection.User.one({'id':self.uid})
+        user_info = u.populate()
+        doctor_info = {
+                       'id' : self.id,
+                       'uid' : u.id,
+                       'desc' : self.desc
+                       }
+        user_info.update(doctor_info)
+        return user_info
 
 
 @connection.register
