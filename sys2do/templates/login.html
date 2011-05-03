@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+ <head>
+  <title>Login</title>
+  
+  <link href="{{url_for('.static', filename='ext/resources/css/ext-all.css')}}" rel="stylesheet" type="text/css" />
+  
+  <script src="{{url_for('.static', filename='ext/adapter/ext/ext-base.js')}}" type="text/javascript"></script>	
+  <script src="{{url_for('.static', filename='ext/ext-all-debug.js')}}" type="text/javascript"></script>
+  
+  <style type="text/css">
+  		
+  </style>
+
+  <script language="JavaScript" type="text/javascript">
+    //<![CDATA[
+          Ext.onReady(function(){
+              var msg = [];
+	      		{% with messages = get_flashed_messages() %}
+	      			{% if messages %}
+	      				{% for message in messages %}
+	      					msg.push('{{ message }}');
+	      				{% endfor %}
+	      			{% endif %}
+	      		{% endwith %}          
+              
+	      	 if(msg.length>0){
+	      	     Ext.Msg.alert(msg.join("\n"));
+	      	 }
+	      	
+	      	  Ext.QuickTips.init();
+               
+              var form = new Ext.FormPanel({
+                  url : '/login_handler',
+                  renderTo : Ext.fly("login_form"),
+                  title : 'Login',
+                  width : 300,
+                  standardSubmit:true,
+                  items:[{
+                      xtype:'textfield',
+                      fieldLabel:'E-mail',
+                      name:'email',
+                      allowBlank : false,
+                      
+                  },{
+                      xtype:'textfield',
+                      fieldLabel:'Password',
+                      inputType:'password',
+                      name:'password',
+                      allowBlank : false,
+                  }],
+                  buttons:[{
+                      text:'Submit',
+                      handler:function(){
+                          form.getForm().submit({
+                              success:function(f,action){
+                                  window.location = '/index';
+                              },
+                              failure:function(f,action){
+                                  Ext.Msg.alert(f);
+                                  //Ext.Msg.alert(action);
+                                  //Ext.Msg.alert("The service is not avaiable now,please try it later!")
+                              }
+                          });
+                      }
+                  },{
+                      text:'Register',
+                      handler:function(){
+                          
+                      }
+                  }]
+              });
+          })
+    //]]>
+   </script>
+ </head>
+
+ <body>
+  	<div id="login_form" style=""></div>
+ </body>
+</html>

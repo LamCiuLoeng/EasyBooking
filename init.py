@@ -64,6 +64,8 @@ def init():
     admin = connection.User()
     admin.email = u'aa@aa.com'
     admin.password = u'aa'
+    admin.first_name = u'Admin'
+    admin.last_name = u'Test'
     admin.id = admin.getID()
     admin.save()
 

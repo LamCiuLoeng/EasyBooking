@@ -252,6 +252,14 @@ var cal_config = {
 	            //autoLoad: true,
 	            eventStore: store,
                 calendarStore: calendarStore,
+                showDayView: false,
+                showMultiDayView: false,
+                showMultiWeekView:false,
+                weekViewCfg:{
+                    viewStartHour: 9,
+                    viewEndHour: 18,
+                    ddIncrement:30
+                },
                 /*
 	            viewConfig:{
 	                
